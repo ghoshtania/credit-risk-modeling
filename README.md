@@ -5,27 +5,26 @@ dataset (2007–2018Q4, ~2.26M loans, 1.35M resolved after cleaning).
 
 ## Project Structure
 
-- `data/` — data loading and preprocessing scripts
-- `eda/` — exploratory data analysis and vintage analysis
-- `features/` — WoE encoding, Information Value, feature engineering
-- `pd_models/` — logistic regression scorecard, LightGBM, Cox survival model
-- `lgd_ead/` — Loss Given Default and Exposure at Default modeling
-- `stress_testing/` — macroeconomic stress scenarios
-- `regulatory/` — IFRS 9 staging/ECL and Basel III IRB capital
-- `portfolio/` — Gaussian copula Monte Carlo portfolio simulation
-- `merton/` — Merton structural model applied to public company credit risk
-- `ai_components/` — AI/LLM-related extensions
-- `validation/` — full model validation suite and temporal backtest
-- `report/` — bank-style model documentation report
+| Folder | Contents |
+|---|---|
+| `eda/` | Data loading, leakage removal, missing values, EDA, vintage analysis |
+| `features/` | WoE encoding and Information Value feature engineering |
+| `pd_models/` | Logistic scorecard, LightGBM, Kaplan-Meier, Cox, transition matrix |
+| `lgd_ead/` | Loss Given Default and Exposure at Default modeling |
+| `stress_testing/` | FRED macro integration, time-varying Cox, stress scenarios |
+| `regulatory/` | IFRS 9 staging/ECL and Basel III IRB capital |
+| `portfolio/` | Gaussian copula calibration and Monte Carlo simulation |
+| `merton/` | Merton structural model and Distance-to-Default time series |
+| `validation/` | Full validation suite and out-of-time temporal backtest |
+| `report/` | Bank-style model documentation report |
+| `credit_risk_modeling_full.ipynb` | The complete project in a single notebook (reference copy) |
 
 ## Models
 
-| Model | Metric | Value |
-|---|---|---|
-| Logistic Regression Scorecard | AUC | 0.701 |
-| LightGBM | AUC | 0.713 |
-| LightGBM | Gini | 0.425 |
-| LightGBM | KS | 0.309 |
+| Model | AUC | Gini | KS |
+|---|---|---|---|
+| Logistic Regression Scorecard | 0.701 | 0.402 | 0.291 |
+| LightGBM | 0.713 | 0.425 | 0.309 |
 
 ## Key Findings
 
@@ -33,12 +32,14 @@ dataset (2007–2018Q4, ~2.26M loans, 1.35M resolved after cleaning).
 - Temporal backtest (2013–2016 train, 2018 test): AUC change +0.0013, PSI 0.025 — stable
 - Basel III IRB capital: $1.27B (unexpected-loss buffer, additive to IFRS 9 provisions)
 - Gaussian copula simulation: 99.9% VaR exceeds expected loss by >2.5x
+- Merton model on 19 public companies: ~30x gap in mean implied PD between investment-grade and high-yield groups
 
 ## Known Limitations
 
 This project documents several real data and methodological limitations
-encountered during development, including a macro-sensitivity identification
-problem, a dataset that does not extend past Q4 2018 (constraining the
-temporal backtest), and a paused correlation-parameter calibration. See
-`report/` for the full model documentation, which details each limitation
-with its cause, impact, and resolution.
+encountered during development — most notably that the dataset does not
+extend past Q4 2018 (constraining the temporal backtest's ability to test
+against COVID-era stress), and an identification problem that prevented
+reliably estimating macro sensitivity directly from the data. See
+`report/` and the relevant notebooks for full detail on each finding,
+including its cause, impact, and resolution.
